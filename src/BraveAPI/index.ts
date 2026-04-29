@@ -11,6 +11,7 @@ const typeToPathMap: Record<keyof Endpoints, string> = {
   web: '/res/v1/web/search',
   summarizer: '/res/v1/summarizer/search',
   llmContext: '/res/v1/llm/context',
+  placeSearch: '/res/v1/local/place_search',
 };
 
 const getDefaultRequestHeaders = (): Record<string, string> => {
@@ -43,7 +44,6 @@ const normalizeGoggle = (value: unknown): string | null => {
 async function issueRequest<T extends keyof Endpoints>(
   endpoint: T,
   parameters: Endpoints[T]['params'],
-  // TODO (Sampson): Implement support for custom request headers (helpful for POIs, etc.)
   requestHeaders: Endpoints[T]['requestHeaders'] = {} as Endpoints[T]['requestHeaders']
 ): Promise<Endpoints[T]['response']> {
   // TODO (Sampson): Improve rate-limit logic to support self-throttling and n-keys
