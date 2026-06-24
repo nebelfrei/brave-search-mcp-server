@@ -169,7 +169,8 @@ Retrieves pre-extracted web content optimized for AI agents, LLM grounding, and 
 
 The server supports the following environment variables:
 
-- `BRAVE_API_KEY`: Your Brave Search API key (required)
+- `BRAVE_API_KEY`: Your Brave Search API key (required unless `BRAVE_API_KEY_FILE` is set)
+- `BRAVE_API_KEY_FILE`: Path to a file containing your Brave Search API key. When set, this takes precedence over `BRAVE_API_KEY`. Useful for Docker secrets and similar mounted-secret setups.
 - `BRAVE_MCP_TRANSPORT`: Transport mode ("http" or "stdio", default: "stdio")
 - `BRAVE_MCP_PORT`: HTTP server port (default: 8080)
 - `BRAVE_MCP_HOST`: HTTP server host (default: "0.0.0.0")
@@ -184,7 +185,8 @@ The server supports the following environment variables:
 node dist/index.js [options]
 
 Options:
-  --brave-api-key <string>    Brave API key
+  --brave-api-key <string>        Brave API key
+  --brave-api-key-file <string>   Path to file containing Brave API key
   --transport <stdio|http>    Transport type (default: stdio)
   --port <number>             HTTP server port (default: 8080)
   --host <string>             HTTP server host (default: 0.0.0.0)
@@ -381,6 +383,26 @@ For local development with Docker:
 ```bash
 docker-compose up --build
 ```
+
+Set `BRAVE_API_KEY` (or `BRAVE_API_KEY_FILE`) in your shell or a `.env` file before starting the stack. The default `docker-compose.yml` also accepts `BRAVE_API_KEY_FILE` when the path is valid inside the container (for example, from a bind mount or Docker secret).
+
+#### Docker Compose secrets (optional)
+
+To avoid putting the API key in an environment variable, you can use [Docker Compose secrets](https://docs.docker.com/compose/how-tos/use-secrets/). The server reads the key from the path in `BRAVE_API_KEY_FILE`, which must exist inside the container.
+
+1. Copy the example secret file and add your key:
+
+```bash
+cp secrets/brave_api_key.txt.example secrets/brave_api_key.txt
+```
+
+2. Start the stack with the optional secrets override:
+
+```bash
+docker compose -f docker-compose.yml -f docker-compose.secrets.example.yml up --build
+```
+
+The override mounts the secret at `/run/secrets/brave_api_key` and sets `BRAVE_API_KEY_FILE` accordingly. See `docker-compose.secrets.example.yml` for the full configuration.
 
 ## License
 
